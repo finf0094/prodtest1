@@ -11,10 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserInfo {
-    private Long itin;
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
+    private Long iin;
+    private String firstname;
+    private String lastname;
+    private String phone;
     private List<Role> roles;
     private String email;
 }

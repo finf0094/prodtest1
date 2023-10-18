@@ -14,5 +14,5 @@ import java.util.List;
 public class JwtResponse {
     private String token;
     private String email;
-    private List<Role> roles;
+    private List<String> roles;
 }

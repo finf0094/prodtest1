@@ -28,7 +28,7 @@ public class ResumeController {
 
     @PostMapping("/upload-resume")
     public Map<String, String> uploadResume(
-            @RequestParam("iin") String iin,
+            @RequestParam("iin") Long iin,
             @RequestPart("file") MultipartFile file
     ) {
         try {

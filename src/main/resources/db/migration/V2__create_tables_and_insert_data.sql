@@ -9,19 +9,20 @@ CREATE TABLE roles (
 -- Создаем таблицу Resume
 CREATE TABLE Resume (
                         id VARCHAR(255) PRIMARY KEY,
-                        iin VARCHAR(255),
-                        fileName VARCHAR(255),
-                        filePath VARCHAR(255)
+                        iin BIGINT,
+                        file_name VARCHAR(255),
+                        file_path VARCHAR(255)
 );
 
 -- Создаем таблицу users
 CREATE TABLE users (
-                       itin SERIAL PRIMARY KEY,
+                       itin BIGINT PRIMARY KEY,
                        email VARCHAR(255) NOT NULL UNIQUE,
                        firstname VARCHAR(255),
                        lastname VARCHAR(255),
                        password VARCHAR(255) NOT NULL,
-                       phone VARCHAR(255) UNIQUE
+                       phone VARCHAR(255) UNIQUE,
+                       position VARCHAR(255)
 );
 
 -- Создаем таблицу users_roles
@@ -35,13 +36,13 @@ CREATE TABLE users_roles (
 
 -- Вставляем начальные данные в таблицу roles
 INSERT INTO roles (name)
-VALUES ('ROLE_ADMIN'), ('ROLE_USER');
+VALUES ('ROLE_MODERATOR'), ('ROLE_USER');
 
 -- Вставляем начальные данные в таблицу users
 -- PASSWORD: 12345
-INSERT INTO users (firstname, password, phone, email, lastname)
-VALUES ('Асхат', '$2a$10$/R5FEJnBkO3cYOSghzv/Q.hsFAH/4iaV/4ZaUcLvauw6Tg.xEQCDW', '+77711551534', 'finf0094@gmail.com', 'Kulush');
+INSERT INTO users (itin, firstname, password, phone, email, lastname, position)
+VALUES ('0412165506', 'Асхат', '$2a$10$/R5FEJnBkO3cYOSghzv/Q.hsFAH/4iaV/4ZaUcLvauw6Tg.xEQCDW', '+77711551534', 'finf0094@gmail.com', 'Kulush', 'IT');
 
 -- Связываем пользователя с ролью
 INSERT INTO users_roles (user_id, role_id)
-VALUES (1, 1);
+VALUES (0412165506, 1);
