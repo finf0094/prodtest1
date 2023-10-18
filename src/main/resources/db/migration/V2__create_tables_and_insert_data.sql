@@ -6,14 +6,22 @@ CREATE TABLE roles (
                        name VARCHAR(255) NOT NULL UNIQUE
 );
 
+-- Создаем таблицу Resume
+CREATE TABLE Resume (
+                        id VARCHAR(255) PRIMARY KEY,
+                        iin VARCHAR(255),
+                        fileName VARCHAR(255),
+                        filePath VARCHAR(255)
+);
+
 -- Создаем таблицу users
 CREATE TABLE users (
                        itin SERIAL PRIMARY KEY,
                        email VARCHAR(255) NOT NULL UNIQUE,
-                       firstname VARCHAR(255) NOT NULL,
-                       lastname VARCHAR(255) NOT NULL,
+                       firstname VARCHAR(255),
+                       lastname VARCHAR(255),
                        password VARCHAR(255) NOT NULL,
-                       phone VARCHAR(255) NOT NULL UNIQUE
+                       phone VARCHAR(255) UNIQUE
 );
 
 -- Создаем таблицу users_roles
