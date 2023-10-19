@@ -66,12 +66,20 @@ public class UserService implements UserDetailsService {
         );
     }
 
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+
+    // пока не использую
     public User createNewUser(RegistrationUserDto registrationUserDto) {
         User user = new User();
         user.setItin(registrationUserDto.getIin());
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
         user.setEmail(registrationUserDto.getEmail());
         user.setRoles(List.of(roleRepository.findByName("ROLE_USER").get()));
+
+
 
         userRepository.save(user);
         return user;
@@ -102,22 +110,32 @@ public class UserService implements UserDetailsService {
             ResponseEntity<User> response = restTemplate.getForEntity(apiUrl, User.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                System.out.println("s");
-                return ResponseEntity.ok(response.getBody());
+                return response.getBody();
             } else {
                 return null;
             }
         } catch (HttpClientErrorException.NotFound notFoundException) {
-            // Обработка ошибки 404 (Not Found)
-            // Исправить нужно
             return null;
         } catch (HttpClientErrorException httpException) {
-            // Обработка других ошибок HTTP
-            return ResponseEntity.status(httpException.getStatusCode()).body(httpException.getResponseBodyAsString());
+            return null;
         } catch (Exception e) {
-            // Обработка других исключений
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return null;
         }
     }
+
+    public ResponseEntity<? extends Object> getUserData() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // если не авторизован выкидываем ошибку
+        if (!authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // находим в базе пользователя
+        User user = userRepository.findByEmail(authentication.getPrincipal().toString()).orElseThrow();
+
+        return ResponseEntity.ok(user);
+    }
+
 
 }

@@ -50,45 +50,53 @@ public class AuthController {
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getIin());
         String token = jwtTokenUtils.generateToken(userDetails);
 
-        List<Role> roles = userDetails.getAuthorities()
+        List<String> roles = userDetails.getAuthorities()
                 .stream()
-                .map(authority -> new Role(authority.getAuthority()))
+                .map(authority -> authority.getAuthority())
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new JwtResponse(token, userDetails.getUsername(),roles));
+        return ResponseEntity.ok(new JwtResponse(token, authRequest.getIin(), userDetails.getUsername(), roles));
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
-        // Проверка Джанго
-        if (userService.getUserFromDjangoApiByItin(registrationUserDto.getIin()) == null) {
-             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "BAD REQUEST"), HttpStatus.BAD_REQUEST);
+        User userFromDjango = userService.getUserFromDjangoApiByItin(registrationUserDto.getIin());
+
+        // Check if the user data is retrieved successfully from Django
+        if (userFromDjango == null) {
+            return new ResponseEntity<>(
+                    new AppError(HttpStatus.BAD_REQUEST.value(), "BAD REQUEST"), HttpStatus.BAD_REQUEST
+            );
         }
 
-        // Проверка пароля
-//        if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
-//            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Пароли не совпадают!"), HttpStatus.BAD_REQUEST);
-//        }
-
-        if (userService.findByEmail(registrationUserDto.getEmail()).isPresent()) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Пользователь с такой почтой уже существует!"), HttpStatus.BAD_REQUEST);
+        if (userService.findByItin(registrationUserDto.getIin()).isPresent()) {
+            return new ResponseEntity<>(
+                    new AppError(HttpStatus.BAD_REQUEST.value(), "Пользователь с таким ИИН уже существует"), HttpStatus.BAD_REQUEST
+            );
         }
 
-        User user = userService.createNewUser(registrationUserDto);
-        return ResponseEntity.ok(new UserInfo(
-                user.getItin(),
-                user.getFirstname(),
-                user.getLastname(),
-                user.getPhone(),
-                user.getRoles()
-                        .stream()
-                        .map(role -> role)
-                        .collect(Collectors.toList()),
-                user.getEmail()
-        ));
-     }
+        System.out.println(userFromDjango);
 
-     @GetMapping("/user-info")
+        // Create a new user and set its properties using data from Django
+        User user = new User();
+        user.setItin(registrationUserDto.getIin());
+        user.setEmail(registrationUserDto.getEmail());
+        user.setRoles(List.of(roleService.findByName("ROLE_USER")));
+        user.setFirstname(userFromDjango.getFirstname());
+        user.setLastname(userFromDjango.getLastname());
+        user.setPhone(userFromDjango.getPhone());
+        user.setPosition(userFromDjango.getPosition());
+
+        // Set the user's password using passwordEncoder
+        user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
+
+        userService.save(user);
+
+        return ResponseEntity.ok("User created");
+    }
+
+
+    @GetMapping("/user-info")
      public ResponseEntity<?> getUserData() {
          // получаем из фильтра данные ползователя
          Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -103,11 +111,13 @@ public class AuthController {
          // находим в базе пользователя
          User user = userService.findByEmail(authentication.getPrincipal().toString()).orElseThrow();
 
-         userInfo.setItin(user.getItin());
+         userInfo.setIin(user.getItin());
          userInfo.setEmail(user.getEmail());
-         userInfo.setFirstName(user.getFirstname());
+         userInfo.setFirstname(user.getFirstname());
          userInfo.setRoles(user.getRoles());
-         userInfo.setPhoneNumber(user.getPhone());
+         userInfo.setPhone(user.getPhone());
+         userInfo.setLastname(user.getLastname());
+         userInfo.setPosition(user.getPosition());
 
          return ResponseEntity.ok(userInfo);
      }
