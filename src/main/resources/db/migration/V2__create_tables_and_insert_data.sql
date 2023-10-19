@@ -16,7 +16,8 @@ CREATE TABLE Resume (
 
 -- Создаем таблицу users
 CREATE TABLE users (
-                       itin SERIAL PRIMARY KEY,
+                       id SERIAL PRIMARY KEY,
+                       itin VARCHAR(12) NOT NULL UNIQUE,
                        email VARCHAR(255) NOT NULL UNIQUE,
                        firstname VARCHAR(255),
                        lastname VARCHAR(255),
@@ -29,18 +30,25 @@ CREATE TABLE users_roles (
                              user_id BIGINT NOT NULL,
                              role_id INT NOT NULL,
                              PRIMARY KEY (user_id, role_id),
-                             FOREIGN KEY (user_id) REFERENCES users (itin),
+                             FOREIGN KEY (user_id) REFERENCES users (id),
                              FOREIGN KEY (role_id) REFERENCES roles (id)
 );
+-- Создаем таблицу approval_request
+-- CREATE TABLE approval_request (
+--                                  id SERIAL PRIMARY KEY,
+--                                  user_id BIGINT NOT NULL,
+--                                  status VARCHAR(255) NOT NULL,
+--                                  FOREIGN KEY (user_id) REFERENCES users (id)
+-- );
 
 -- Вставляем начальные данные в таблицу roles
 INSERT INTO roles (name)
-VALUES ('ROLE_ADMIN'), ('ROLE_USER');
+VALUES ('ROLE_MODERATOR'), ('ROLE_USER');
 
 -- Вставляем начальные данные в таблицу users
 -- PASSWORD: 12345
-INSERT INTO users (firstname, password, phone, email, lastname)
-VALUES ('Асхат', '$2a$10$/R5FEJnBkO3cYOSghzv/Q.hsFAH/4iaV/4ZaUcLvauw6Tg.xEQCDW', '+77711551534', 'finf0094@gmail.com', 'Kulush');
+INSERT INTO users (id, itin, firstname, password, phone, email, lastname)
+VALUES ('1','0007275504', 'Асхат', '$2a$10$/R5FEJnBkO3cYOSghzv/Q.hsFAH/4iaV/4ZaUcLvauw6Tg.xEQCDW', '+77711551534', 'finf0094@gmail.com', 'Kulush');
 
 -- Связываем пользователя с ролью
 INSERT INTO users_roles (user_id, role_id)

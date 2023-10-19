@@ -55,7 +55,7 @@ public class UserService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String itin) throws UsernameNotFoundException {
-        User user = findByItin(Long.valueOf(itin)).orElseThrow(() -> new UsernameNotFoundException(
+        User user = findByItin(itin).orElseThrow(() -> new UsernameNotFoundException(
                 String.format("Пользователь '%s' не найден!", itin)
         ));
 
@@ -80,7 +80,7 @@ public class UserService implements UserDetailsService {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-    public Optional<User> findByItin(Long itin) {
+    public Optional<User> findByItin(String itin) {
         return userRepository.findByItin(itin);
     }
 
@@ -96,7 +96,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<?> getUserFromDjangoApiByItin(Long itin) {
+    public ResponseEntity<?> getUserFromDjangoApiByItin(String itin) {
         String apiUrl = "http://185.125.88.26:3000/api/user/" + itin;
         try {
             ResponseEntity<User> response = restTemplate.getForEntity(apiUrl, User.class);

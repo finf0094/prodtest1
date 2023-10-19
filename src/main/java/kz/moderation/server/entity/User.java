@@ -11,7 +11,10 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Id
-    private Long itin;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    private String itin;
 
     private String email;
 

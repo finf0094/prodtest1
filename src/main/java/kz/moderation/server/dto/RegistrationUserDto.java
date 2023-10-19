@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class RegistrationUserDto {
-    private Long iin;
+    private String iin;
     private String email;
     private String password;
 }

@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserInfo {
-    private Long itin;
+    private String itin;
     private String firstName;
     private String lastName;
     private String phoneNumber;

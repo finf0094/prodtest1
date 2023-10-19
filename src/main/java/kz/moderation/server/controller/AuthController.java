@@ -55,7 +55,7 @@ public class AuthController {
                 .map(authority -> new Role(authority.getAuthority()))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new JwtResponse(token, userDetails.getUsername(), (List<Role>) userDetails.getAuthorities().stream().map(role -> role).collect(Collectors.toList())));
+        return ResponseEntity.ok(new JwtResponse(token, userDetails.getUsername(),roles));
     }
 
     @PostMapping("/register")
