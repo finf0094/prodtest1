@@ -2,6 +2,7 @@ package kz.moderation.server.service;
 
 
 import kz.moderation.server.dto.RegistrationUserDto;
+import kz.moderation.server.dto.UserInfo;
 import kz.moderation.server.entity.User;
 import kz.moderation.server.repository.RoleRepository;
 import kz.moderation.server.repository.UserRepository;
@@ -9,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -121,6 +124,20 @@ public class UserService implements UserDetailsService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public ResponseEntity<? extends Object> getUserData() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // если не авторизован выкидываем ошибку
+        if (!authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // находим в базе пользователя
+        User user = userRepository.findByEmail(authentication.getPrincipal().toString()).orElseThrow();
+
+        return ResponseEntity.ok(user);
     }
 
 

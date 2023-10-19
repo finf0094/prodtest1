@@ -60,8 +60,7 @@ public class AuthController {
                 .map(authority -> authority.getAuthority())
                 .collect(Collectors.toList());
 
-
-        return ResponseEntity.ok(new JwtResponse(token, userDetails.getUsername(), roles));
+        return ResponseEntity.ok(new JwtResponse(token, authRequest.getIin(), userDetails.getUsername(), roles));
     }
 
     @PostMapping("/register")
@@ -123,6 +122,7 @@ public class AuthController {
          userInfo.setRoles(user.getRoles());
          userInfo.setPhone(user.getPhone());
          userInfo.setLastname(user.getLastname());
+         userInfo.setPosition(user.getPosition());
 
          return ResponseEntity.ok(userInfo);
      }

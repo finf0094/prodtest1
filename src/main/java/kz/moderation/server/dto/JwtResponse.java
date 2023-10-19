@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class JwtResponse {
     private String token;
+    private String iin;
     private String email;
     private List<String> roles;
 }

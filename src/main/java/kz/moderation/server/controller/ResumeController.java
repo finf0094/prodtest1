@@ -2,13 +2,18 @@ package kz.moderation.server.controller;
 
 
 import kz.moderation.server.entity.Resume;
+import kz.moderation.server.entity.User;
 import kz.moderation.server.repository.ResumeRepository;
+import kz.moderation.server.service.ResumeService;
+import kz.moderation.server.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,6 +31,8 @@ import java.util.UUID;
 public class ResumeController {
     private static final String UPLOAD_DIR = "uploads/";
     private final ResumeRepository resumeRepository;
+    private final ResumeService resumeService;
+
 
     @PostMapping("/upload-resume")
     public Map<String, String> uploadResume(
@@ -59,7 +67,6 @@ public class ResumeController {
             resumeRepository.save(resumeDetails);
 
             Map<String, String> response = new HashMap<>();
-            response.put("message", "File uploaded successfully");
             response.put("resumeId", resumeId);
             return response;
 
@@ -117,4 +124,13 @@ public class ResumeController {
             throw new RuntimeException("An error occurred while deleting your resume.: " + e.getMessage());
         }
     }
+
+    @GetMapping("/user-resumes")
+    private List<String> getUserResumes() {
+        List<String> resumeFilenames = resumeService.getResumesForUser();
+        return resumeFilenames;
+    }
+
+
+
 }
