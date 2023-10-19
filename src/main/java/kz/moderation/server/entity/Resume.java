@@ -15,7 +15,7 @@ import lombok.Setter;
 public class Resume {
     @Id
     private String id;
-    private Long iin;
+    private String iin;
     private String fileName;
     private String filePath;
 }

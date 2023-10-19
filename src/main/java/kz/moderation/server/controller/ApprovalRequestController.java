@@ -1,7 +1,9 @@
 package kz.moderation.server.controller;
 
+import jakarta.websocket.server.PathParam;
 import kz.moderation.server.dto.ApprovalRequest.request.ApprovalRequestDto;
 import kz.moderation.server.dto.ApprovalRequest.response.ApprovalRequestResponseDto;
+import kz.moderation.server.dto.ResponseDto;
 import kz.moderation.server.dto.user.UserDto;
 import kz.moderation.server.entity.ApprovalRequest;
 import kz.moderation.server.exception.NotFoundException;
@@ -61,9 +63,15 @@ public class ApprovalRequestController {
         return approvalRequestService.rejectRequest(requestId);
     }
 
+    @GetMapping("/status")
+    public ResponseEntity<?> userStatus(@PathParam("itin") String itin)
+    {
+        return ResponseEntity.ok(new ResponseDto(200,approvalRequestService.getStatusByItin(itin).toString()));
+    }
+
     @GetMapping
-    public List<ApprovalRequest> getAllApprovalRequests() {
-        return approvalRequestService.getAllApprovalRequests();
+    public ResponseEntity<?> getAllApprovalRequests() {
+        return ResponseEntity.ok(new ResponseDto(200, approvalRequestService.getAllApprovalRequests()));
     }
 }
 

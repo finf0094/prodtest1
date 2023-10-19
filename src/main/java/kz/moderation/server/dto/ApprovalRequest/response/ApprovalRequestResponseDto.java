@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApprovalRequestResponseDto {
+    Long id;
     ApprovalRequestStatus status;
     UserDto user;
 

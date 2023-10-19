@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -104,7 +106,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<?> getUserFromDjangoApiByItin(String itin) {
+    public User getUserFromDjangoApiByItin(String itin) {
         String apiUrl = "http://185.125.88.26:3000/api/user/" + itin;
         try {
             ResponseEntity<User> response = restTemplate.getForEntity(apiUrl, User.class);
@@ -115,10 +117,6 @@ public class UserService implements UserDetailsService {
                 return null;
             }
         } catch (HttpClientErrorException.NotFound notFoundException) {
-            return null;
-        } catch (HttpClientErrorException httpException) {
-            return null;
-        } catch (Exception e) {
             return null;
         }
     }

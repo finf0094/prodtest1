@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface ResumeRepository extends JpaRepository<Resume, String> {
-    List<Resume> findAllByIin(Long iin);
+    List<Resume> findAllByIin(String iin);
 }

@@ -4,6 +4,7 @@ import kz.moderation.server.dto.*;
 import kz.moderation.server.entity.Role;
 import kz.moderation.server.entity.User;
 import kz.moderation.server.exception.AppError;
+import kz.moderation.server.service.RoleService;
 import kz.moderation.server.service.UserService;
 import kz.moderation.server.utils.JwtTokenUtils;
 import kz.moderation.server.dto.JwtRequest;
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +37,9 @@ public class AuthController {
     private final UserService userService;
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
+    private final RoleService roleService;
 
+    private final PasswordEncoder passwordEncoder;
     @PostMapping("/login")
     public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
         System.out.println(authRequest);
@@ -65,7 +69,7 @@ public class AuthController {
         // Check if the user data is retrieved successfully from Django
         if (userFromDjango == null) {
             return new ResponseEntity<>(
-                    new AppError(HttpStatus.BAD_REQUEST.value(), "BAD REQUEST"), HttpStatus.BAD_REQUEST
+                    new AppError(HttpStatus.BAD_REQUEST.value(), "Django"), HttpStatus.BAD_REQUEST
             );
         }
 
@@ -96,30 +100,30 @@ public class AuthController {
     }
 
 
-    @GetMapping("/user-info")
-     public ResponseEntity<?> getUserData() {
+    @GetMapping("/user-info/{itin}")
+     public ResponseEntity<?> getUserData(@PathVariable String itin) {
          // получаем из фильтра данные ползователя
-         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-         // если не авторизован выкидываем ошибку
-         if (!authentication.isAuthenticated()) {
-             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-         }
+//         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//         // если не авторизован выкидываем ошибку
+//         if (!authentication.isAuthenticated()) {
+//             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//         }
 
          UserInfo userInfo = new UserInfo();
-
+            System.out.println(itin);
          // находим в базе пользователя
-         User user = userService.findByEmail(authentication.getPrincipal().toString()).orElseThrow();
+         User user = userService.findByItin(itin).get();
 
-         userInfo.setIin(user.getItin());
+         userInfo.setItin(user.getItin());
          userInfo.setEmail(user.getEmail());
-         userInfo.setFirstname(user.getFirstname());
+         userInfo.setFirstName(user.getFirstname());
          userInfo.setRoles(user.getRoles());
-         userInfo.setPhone(user.getPhone());
-         userInfo.setLastname(user.getLastname());
+         userInfo.setPhoneNumber(user.getPhone());
+         userInfo.setLastName(user.getLastname());
          userInfo.setPosition(user.getPosition());
 
-         return ResponseEntity.ok(userInfo);
+         return ResponseEntity.ok(new ResponseDto(200, userInfo));
      }
 
 }

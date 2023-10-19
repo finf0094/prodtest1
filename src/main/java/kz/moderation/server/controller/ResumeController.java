@@ -7,6 +7,7 @@ import kz.moderation.server.repository.ResumeRepository;
 import kz.moderation.server.service.ResumeService;
 import kz.moderation.server.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +29,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class ResumeController {
     private static final String UPLOAD_DIR = "uploads/";
     private final ResumeRepository resumeRepository;
@@ -36,7 +38,7 @@ public class ResumeController {
 
     @PostMapping("/upload-resume")
     public Map<String, String> uploadResume(
-            @RequestParam("iin") Long iin,
+            @RequestParam("iin") String iin,
             @RequestPart("file") MultipartFile file
     ) {
         try {
@@ -125,12 +127,11 @@ public class ResumeController {
         }
     }
 
-    @GetMapping("/user-resumes")
-    private List<String> getUserResumes() {
-        List<String> resumeFilenames = resumeService.getResumesForUser();
+    @GetMapping("/user-resume/{iin}")
+    private List<Resume> getUserResumes(@PathVariable String iin) {
+        System.out.println(iin);
+        List<Resume> resumeFilenames = resumeService.getResumesForUser(iin);
         return resumeFilenames;
     }
-
-
 
 }
