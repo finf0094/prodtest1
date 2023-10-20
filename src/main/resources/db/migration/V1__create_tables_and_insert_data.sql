@@ -35,6 +35,8 @@ CREATE TABLE users_roles (
 )
 
 
+
+
 -- INSERT INTO roles (name)
 -- VALUES ('ROLE_MODERATOR'), ('ROLE_USER')
 
