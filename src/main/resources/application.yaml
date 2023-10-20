@@ -24,3 +24,6 @@
 
       main:
         allow-circular-references: true
+
+  server:
+    port: 8001
