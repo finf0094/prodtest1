@@ -1,4 +1,4 @@
-package kz.moderation.server.dto;
+package kz.moderation.server.dto.JWT;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

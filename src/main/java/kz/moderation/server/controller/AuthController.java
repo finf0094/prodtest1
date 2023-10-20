@@ -1,32 +1,29 @@
 package kz.moderation.server.controller;
 
 import kz.moderation.server.dto.*;
-import kz.moderation.server.entity.Role;
+import kz.moderation.server.entity.RefreshToken;
 import kz.moderation.server.entity.User;
 import kz.moderation.server.exception.AppError;
+import kz.moderation.server.service.RefreshTokenService;
 import kz.moderation.server.service.RoleService;
 import kz.moderation.server.service.UserService;
 import kz.moderation.server.utils.JwtTokenUtils;
-import kz.moderation.server.dto.JwtRequest;
-import kz.moderation.server.dto.JwtResponse;
+import kz.moderation.server.dto.JWT.JwtRequest;
+import kz.moderation.server.dto.JWT.JwtResponse;
 import kz.moderation.server.dto.RegistrationUserDto;
 import kz.moderation.server.dto.UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RestController
@@ -35,14 +32,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AuthController {
     private final UserService userService;
-    private final JwtTokenUtils jwtTokenUtils;
-    private final AuthenticationManager authenticationManager;
     private final RoleService roleService;
+    private final JwtTokenUtils jwtTokenUtils;
+    private final RefreshTokenService refreshTokenService;
+    private final AuthenticationManager authenticationManager;
 
     private final PasswordEncoder passwordEncoder;
     @PostMapping("/login")
     public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
-        System.out.println(authRequest);
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authRequest.getIin(), authRequest.getPassword()
@@ -52,14 +49,21 @@ public class AuthController {
         }
 
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getIin());
-        String token = jwtTokenUtils.generateToken(userDetails);
-
+        String accessToken = jwtTokenUtils.generateToken(userDetails);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.getIin());
         List<String> roles = userDetails.getAuthorities()
                 .stream()
                 .map(authority -> authority.getAuthority())
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new JwtResponse(token, authRequest.getIin(), userDetails.getUsername(), roles));
+
+        JwtResponse jwtResponse = JwtResponse.builder()
+                .accesToken(accessToken)
+                .refreshToken(refreshToken.getToken())
+                .roles(roles)
+                .build();
+
+        return ResponseEntity.ok(jwtResponse);
     }
 
     @PostMapping("/register")
