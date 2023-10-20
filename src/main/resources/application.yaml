@@ -25,5 +25,5 @@
       main:
         allow-circular-references: true
 
-  server:
-    port: 3002
+    server:
+      port: 3002
