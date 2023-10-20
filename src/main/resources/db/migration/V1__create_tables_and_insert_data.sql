@@ -11,8 +11,8 @@ CREATE TABLE roles (
 CREATE TABLE Resume (
                         id VARCHAR(255) PRIMARY KEY,
                         iin VARCHAR(255),
-                        fileName VARCHAR(255),
-                        filePath VARCHAR(255)
+                        file_name VARCHAR(255),
+                        file_path VARCHAR(255)
 );
 
 -- Создаем таблицу users

@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +93,14 @@ public class ResumeController {
 
         // Http headers for response
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + resume.getFileName());
+
+        try {
+            // Encode the filename to make it safe for HTTP headers
+            String encodedFileName = URLEncoder.encode(resume.getFileName(), "UTF-8");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + encodedFileName);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Error encoding the filename.");
+        }
 
         // Preparing a resource for downloading
         Resource resource = new FileSystemResource(resumeFile);
@@ -102,6 +111,41 @@ public class ResumeController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
+
+    @GetMapping("/download-resume-iin/{iin}")
+    public ResponseEntity<Resource> downloadResumeByIin(@PathVariable String iin) {
+        // find for a resume by ID
+        Resume resume = resumeRepository.findByIin(iin)
+                .orElseThrow(() -> new RuntimeException("Resume not found"));
+
+        // Preparing the path to the resume file
+        File resumeFile = new File(Paths.get(System.getProperty("user.dir"), resume.getFilePath()).toString());
+        if (!resumeFile.exists()) {
+            throw new RuntimeException("File not found");
+        }
+
+        // Http headers for response
+        HttpHeaders headers = new HttpHeaders();
+
+        try {
+            // Encode the filename to make it safe for HTTP headers
+            String encodedFileName = URLEncoder.encode(resume.getFileName(), "UTF-8");
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + encodedFileName);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Error encoding the filename.");
+        }
+
+        // Preparing a resource for downloading
+        Resource resource = new FileSystemResource(resumeFile);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(resumeFile.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+
 
     @DeleteMapping("/delete-resume/{resumeId}")
     public Map<String, String> deleteResume(@PathVariable String resumeId) {
@@ -128,10 +172,9 @@ public class ResumeController {
     }
 
     @GetMapping("/user-resume/{iin}")
-    private List<Resume> getUserResumes(@PathVariable String iin) {
-        System.out.println(iin);
-        List<Resume> resumeFilenames = resumeService.getResumesForUser(iin);
-        return resumeFilenames;
+    public ResponseEntity<?> getUserResumes(@PathVariable String iin) {
+        ResponseEntity<?> responseEntity = resumeService.getResumeForUser(iin);
+        return responseEntity;
     }
 
 }

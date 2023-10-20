@@ -6,7 +6,6 @@ COPY . /server
 RUN mvn clean
 RUN mvn package -DskipTests
 
-
 FROM openjdk:17 as final
 COPY --from=stage1 /server/target/*jar app.jar
 EXPOSE 8080

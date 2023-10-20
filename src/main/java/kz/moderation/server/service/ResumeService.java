@@ -6,6 +6,8 @@ import kz.moderation.server.repository.ResumeRepository;
 import kz.moderation.server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,19 +25,24 @@ public class ResumeService {
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
 
-    public List<Resume> getResumesForUser(String iin) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Resume" + iin);
-        User user = userRepository.findByItin(iin).orElseThrow();
+    public ResponseEntity<?> getResumeForUser(String iin) {
+        User user = userRepository.findByItin(iin).orElse(null); // Используйте orElse(null), чтобы избежать выбрасывания исключения, если пользователя не найдено.
 
+        System.out.println(user);
 
-        List<Resume> userResume = resumeRepository.findAllByIin(user.getItin());
-
-//        List<String> resumeIds = userResumes.stream()
-//                .map(Resume::getId)
-//                .collect(Collectors.toList());
-
-        return userResume;
+        if (user != null) {
+            Resume userResume = resumeRepository.findByIin(user.getItin()).orElse(null);
+            System.out.println(userResume);
+            if (userResume != null) {
+                return ResponseEntity.ok(userResume);
+            } else {
+                // Отправьте сообщение, что резюме отсутствует
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Резюме не найдено");
+            }
+        } else {
+            // Отправьте сообщение, что пользователя не найдено
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Пользователь не найден");
+        }
     }
 
 }

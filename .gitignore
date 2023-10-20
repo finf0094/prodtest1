@@ -31,4 +31,4 @@ build/
 /uploads/
 ### VS Code ###
 .vscode/
-/target
+/target/
