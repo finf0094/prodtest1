@@ -62,7 +62,7 @@ public class UserService implements UserDetailsService {
         ));
 
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
+                user.getItin(),
                 user.getPassword(),
                 user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
         );

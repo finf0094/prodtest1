@@ -15,7 +15,7 @@ public class UserInfo {
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private List<Role> roles;
+    private List<String> roles;
     private String email;
     private String position;
 }

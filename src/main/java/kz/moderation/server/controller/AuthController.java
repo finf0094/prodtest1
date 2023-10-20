@@ -104,30 +104,4 @@ public class AuthController {
     }
 
 
-    @GetMapping("/user-info/{itin}")
-     public ResponseEntity<?> getUserData(@PathVariable String itin) {
-         // получаем из фильтра данные ползователя
-//         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//         // если не авторизован выкидываем ошибку
-//         if (!authentication.isAuthenticated()) {
-//             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//         }
-
-         UserInfo userInfo = new UserInfo();
-            System.out.println(itin);
-         // находим в базе пользователя
-         User user = userService.findByItin(itin).get();
-
-         userInfo.setItin(user.getItin());
-         userInfo.setEmail(user.getEmail());
-         userInfo.setFirstName(user.getFirstname());
-         userInfo.setRoles(user.getRoles());
-         userInfo.setPhoneNumber(user.getPhone());
-         userInfo.setLastName(user.getLastname());
-         userInfo.setPosition(user.getPosition());
-
-         return ResponseEntity.ok(new ResponseDto(200, userInfo));
-     }
-
 }
