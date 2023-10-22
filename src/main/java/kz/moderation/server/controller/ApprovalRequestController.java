@@ -66,12 +66,12 @@ public class ApprovalRequestController {
     @GetMapping("/status")
     public ResponseEntity<?> userStatus(@PathParam("itin") String itin)
     {
-        return ResponseEntity.ok(new ResponseDto(200,approvalRequestService.getStatusByItin(itin).toString()));
+        return ResponseEntity.ok(approvalRequestService.getStatusByItin(itin).toString());
     }
 
     @GetMapping
     public ResponseEntity<?> getAllApprovalRequests() {
-        return ResponseEntity.ok(new ResponseDto(200, approvalRequestService.getAllApprovalRequests()));
+        return ResponseEntity.ok(approvalRequestService.getAllApprovalRequests());
     }
 }
 

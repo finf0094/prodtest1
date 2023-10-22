@@ -1,6 +1,6 @@
     jwt:
       secret: AP/mTtG2INNS9nS/dz4kT+Lxo+Au4PhjfXE09zLKaZs=
-      lifetime: 30m
+      lifetime: 15m
 
     spring:
       datasource:

@@ -1,6 +1,7 @@
 package kz.moderation.server.dto.JWT;
 
 
+import kz.moderation.server.dto.user.UserResponseAfterAuth;
 import kz.moderation.server.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class JwtResponse {
-    private String accesToken;
+    private String accessToken;
     private String refreshToken;
-    private List<String> roles;
+    private UserResponseAfterAuth user;
 }

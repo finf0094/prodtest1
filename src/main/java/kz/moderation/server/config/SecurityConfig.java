@@ -46,6 +46,7 @@ public class SecurityConfig {
         corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3000/","http://185.125.91.161:3000/"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
+        corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
@@ -63,8 +64,31 @@ public class SecurityConfig {
 
         httpSecurity
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/secured").authenticated()
-                            .requestMatchers("/admin").hasRole("ADMIN")
+                    auth.requestMatchers(
+                            "/secured",
+                                    // approval request
+
+                                    // резюме
+                                    "api/download-resume/{resumeId}",
+                                    "api/download-resume-iin/{iin}",
+                                    "api/delete-resume/{resumeId}",
+                                    "api/user-resume/{iin}",
+                                    "api/upload-resume",
+
+                                    // user
+                                    "api/user-info"
+                            )
+                            .authenticated()
+                            .requestMatchers(
+                                    // approval request
+                                    "api/approval-requests",
+                                    "api/approval-requests/{requestId}/approve",
+                                    "api/approval-requests/{requestId}/reject",
+
+
+                                    // resume
+                                    "/upload-resume"
+                            ).hasRole("MODERATOR")
                             .requestMatchers("/**").permitAll();
                 });
 

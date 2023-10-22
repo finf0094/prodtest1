@@ -2,6 +2,7 @@ package kz.moderation.server.controller;
 
 import kz.moderation.server.dto.JWT.JwtResponse;
 import kz.moderation.server.dto.RefreshToken.request.RefreshTokenRequest;
+import kz.moderation.server.dto.user.UserResponseAfterAuth;
 import kz.moderation.server.entity.RefreshToken;
 import kz.moderation.server.exception.AppError;
 import kz.moderation.server.service.RefreshTokenService;
@@ -40,12 +41,20 @@ public class RefreshTokenController {
                     .map(authority -> authority.getAuthority())
                     .collect(Collectors.toList());
 
+
+
+            UserResponseAfterAuth userResponseAfterAuth = new UserResponseAfterAuth(
+                    refreshToken.getUserInfo().getItin(),
+                    refreshToken.getUserInfo().getEmail(),
+                    roles
+            );
+
             String accessToken = jwtTokenUtils.generateToken(userDetails);
 
             JwtResponse jwtResponse = JwtResponse.builder()
-                    .accesToken(accessToken)
+                    .accessToken(accessToken)
                     .refreshToken(refreshToken.getToken())
-                    .roles(roles)
+                    .user(userResponseAfterAuth)
                     .build();
 
             return ResponseEntity.ok(jwtResponse);

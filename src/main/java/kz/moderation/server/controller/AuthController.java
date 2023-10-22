@@ -1,6 +1,7 @@
 package kz.moderation.server.controller;
 
 import kz.moderation.server.dto.*;
+import kz.moderation.server.dto.user.UserResponseAfterAuth;
 import kz.moderation.server.entity.RefreshToken;
 import kz.moderation.server.entity.User;
 import kz.moderation.server.exception.AppError;
@@ -51,16 +52,18 @@ public class AuthController {
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getIin());
         String accessToken = jwtTokenUtils.generateToken(userDetails);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.getIin());
+
         List<String> roles = userDetails.getAuthorities()
                 .stream()
                 .map(authority -> authority.getAuthority())
                 .collect(Collectors.toList());
 
+        UserResponseAfterAuth userResponseAfterAuth = new UserResponseAfterAuth(authRequest.getIin(),userDetails.getUsername(), roles);
 
         JwtResponse jwtResponse = JwtResponse.builder()
-                .accesToken(accessToken)
+                .accessToken(accessToken)
                 .refreshToken(refreshToken.getToken())
-                .roles(roles)
+                .user(userResponseAfterAuth)
                 .build();
 
         return ResponseEntity.ok(jwtResponse);
@@ -102,6 +105,5 @@ public class AuthController {
 
         return ResponseEntity.ok("User created");
     }
-
 
 }
