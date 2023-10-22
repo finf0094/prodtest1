@@ -1,35 +1,29 @@
 package kz.moderation.server.controller;
 
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.security.Principal;
+import kz.moderation.server.service.TestService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(name = "api/v1/test")
+@RequestMapping("/api/tests")
+@RequiredArgsConstructor
 public class TestController {
 
-    @GetMapping("/unsecured")
-    public String unsecured() {
-        return "unsecured";
+    private final TestService testService;
+
+    @GetMapping("/getCurrentUserTest")
+    public ResponseEntity<?> getUserTest() {
+        try {
+            return ResponseEntity.ok(testService.findTestByCurrentUser());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-
-    @GetMapping("/secured")
-    public String secured() {
-        return "secured";
-    }
-
-
-    @GetMapping("/admin")
-    public String admin() {
-        return "admin";
-    }
-
-    @GetMapping("/info")
-    public String info(Principal principal) {
-        return "info";
+    @PostMapping("/{iin}/markTestCompleted")
+    public ResponseEntity<?> markTestCompleted(@PathVariable String iin) {
+        return testService.markTestAsCompleted(iin);
     }
 }

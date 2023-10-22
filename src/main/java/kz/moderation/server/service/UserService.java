@@ -1,6 +1,7 @@
 package kz.moderation.server.service;
 
 
+import kz.moderation.server.config.CustomUserDetails;
 import kz.moderation.server.dto.RegistrationUserDto;
 import kz.moderation.server.entity.User;
 import kz.moderation.server.repository.RoleRepository;
@@ -54,19 +55,26 @@ public class UserService implements UserDetailsService {
         this.restTemplate = restTemplate;
     }
 
+
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String itin) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String itin) throws UsernameNotFoundException {
         User user = findByItin(itin).orElseThrow(() -> new UsernameNotFoundException(
-                String.format("Пользователь '%s' не найден!", itin)
+                String.format("Пользователь с ИИН '%s' не найден!", itin)
         ));
 
-        return new org.springframework.security.core.userdetails.User(
+        CustomUserDetails customUserDetails = new CustomUserDetails(
+                user.getItin(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
+                user.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getName()))
+                        .collect(Collectors.toList())
         );
+
+        return customUserDetails;
     }
+
 
     public User save(User user) {
         return userRepository.save(user);

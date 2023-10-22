@@ -67,6 +67,7 @@ public class SecurityConfig {
                     auth.requestMatchers(
                             "/secured",
                                     // approval request
+                                    "api/approval-requests",
 
                                     // резюме
                                     "api/download-resume/{resumeId}",
@@ -81,13 +82,11 @@ public class SecurityConfig {
                             .authenticated()
                             .requestMatchers(
                                     // approval request
-                                    "api/approval-requests",
                                     "api/approval-requests/{requestId}/approve",
-                                    "api/approval-requests/{requestId}/reject",
+                                    "api/approval-requests/{requestId}/reject"
 
 
                                     // resume
-                                    "/upload-resume"
                             ).hasRole("MODERATOR")
                             .requestMatchers("/**").permitAll();
                 });
