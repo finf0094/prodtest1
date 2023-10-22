@@ -19,9 +19,8 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String questionText;
-    private String correctOption;
-    private String description;
+    private String correctAnswer;
 
     @ElementCollection
-    private List<String> options;
+    private List<String> answer;
 }

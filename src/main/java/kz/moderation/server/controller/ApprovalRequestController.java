@@ -6,6 +6,7 @@ import kz.moderation.server.dto.ApprovalRequest.response.ApprovalRequestResponse
 import kz.moderation.server.dto.ResponseDto;
 import kz.moderation.server.dto.user.UserDto;
 import kz.moderation.server.entity.ApprovalRequest;
+import kz.moderation.server.entity.User;
 import kz.moderation.server.exception.AppError;
 import kz.moderation.server.exception.NotFoundException;
 import kz.moderation.server.service.ApprovalRequestService;
@@ -36,6 +37,7 @@ public class ApprovalRequestController {
                     .lastName(approvalRequest.getUser().getLastname())
                     .email(approvalRequest.getUser().getEmail())
                     .phone(approvalRequest.getUser().getPhone())
+                    .position(approvalRequest.getUser().getPosition())
                     .build();
             ApprovalRequestResponseDto approvalRequestResponseDto =
                     ApprovalRequestResponseDto.builder()
@@ -60,9 +62,19 @@ public class ApprovalRequestController {
         return approvalRequestService.approveRequest(requestId);
     }
 
+    @PutMapping("/{itin}/approved-with-itin")
+    public ApprovalRequest approveRequestByItin(@PathVariable String itin) {
+        return approvalRequestService.approveRequestByItin(itin);
+    }
+
     @PutMapping("/{requestId}/reject")
     public ApprovalRequest rejectRequest(@PathVariable Long requestId) {
         return approvalRequestService.rejectRequest(requestId);
+    }
+
+    @PutMapping("/{itin}/rejected-with-itin")
+    public ApprovalRequest rejectRequest(@PathVariable String itin) {
+        return approvalRequestService.rejectRequest(itin);
     }
 
     @GetMapping("/status")

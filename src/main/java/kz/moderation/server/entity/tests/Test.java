@@ -24,6 +24,4 @@ public class Test {
 
     private String testName;
 
-    @OneToMany
-    private List<Question> questions;
 }

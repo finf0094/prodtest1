@@ -28,7 +28,6 @@ public class TestQuestionController {
     public ResponseEntity<?> createTest(TestRequest testRequest) {
         Test test = new Test();
         test.setTestName(test.getTestName());
-        test.setQuestions(testRequest.getQuestions());
         testService.save(test);
         return ResponseEntity.ok("Success");
     }

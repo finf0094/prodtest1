@@ -40,8 +40,22 @@ public class ApprovalRequestService {
         return approvalRequestRepository.save(request);
     }
 
+    public ApprovalRequest approveRequestByItin(String itin) {
+        ApprovalRequest request = approvalRequestRepository.findByUser_Itin(itin)
+                .orElseThrow(() -> new NotFoundException("Approval Request not found"));
+        request.setStatus(ApprovalRequestStatus.APPROVED);
+        return approvalRequestRepository.save(request);
+    }
+
     public ApprovalRequest rejectRequest(Long requestId) {
         ApprovalRequest request = approvalRequestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("Approval Request not found"));
+        request.setStatus(ApprovalRequestStatus.REJECTED);
+        return approvalRequestRepository.save(request);
+    }
+
+    public ApprovalRequest rejectRequest(String itin) {
+        ApprovalRequest request = approvalRequestRepository.findByUser_Itin(itin)
                 .orElseThrow(() -> new NotFoundException("Approval Request not found"));
         request.setStatus(ApprovalRequestStatus.REJECTED);
         return approvalRequestRepository.save(request);
@@ -58,6 +72,7 @@ public class ApprovalRequestService {
                                         .firstName(approvalRequest.getUser().getFirstname())
                                         .lastName(approvalRequest.getUser().getLastname())
                                         .email(approvalRequest.getUser().getEmail())
+                                        .position(approvalRequest.getUser().getPosition())
                                         .build())
                         .status(approvalRequest.getStatus())
                         .build()

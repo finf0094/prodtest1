@@ -25,12 +25,12 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/user-info/{id}")
-    public UserInfo getUserData(@PathVariable Long id) {
+    @GetMapping("/user/{iin}")
+    public UserInfo getUserData(@PathVariable String iin) {
         UserInfo userInfo = new UserInfo();
 
         // находим в базе пользователя
-        User user = userService.findById(id).get();
+        User user = userService.findByItin(iin).get();
 
         List<String> roles = user.getRoles()
                 .stream()

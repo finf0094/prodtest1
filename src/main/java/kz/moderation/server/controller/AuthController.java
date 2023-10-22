@@ -1,21 +1,16 @@
 package kz.moderation.server.controller;
 
-import kz.moderation.server.dto.*;
 import kz.moderation.server.dto.user.UserResponseAfterAuth;
 import kz.moderation.server.entity.RefreshToken;
-import kz.moderation.server.entity.Test;
 import kz.moderation.server.entity.User;
 import kz.moderation.server.exception.AppError;
-import kz.moderation.server.repository.TestRepository;
 import kz.moderation.server.service.RefreshTokenService;
 import kz.moderation.server.service.RoleService;
-import kz.moderation.server.service.TestService;
 import kz.moderation.server.service.UserService;
 import kz.moderation.server.utils.JwtTokenUtils;
 import kz.moderation.server.dto.JWT.JwtRequest;
 import kz.moderation.server.dto.JWT.JwtResponse;
 import kz.moderation.server.dto.RegistrationUserDto;
-import kz.moderation.server.dto.UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -40,7 +35,6 @@ public class AuthController {
     private final JwtTokenUtils jwtTokenUtils;
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
-    private final TestRepository testRepository;
 
     private final PasswordEncoder passwordEncoder;
     @PostMapping("/login")
@@ -112,11 +106,6 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
 
         userService.save(user);
-
-        Test test = new Test();
-        test.setIin(user.getItin());
-        test.setCompleted(false);
-        testRepository.save(test);
 
         return ResponseEntity.ok("User created");
     }
