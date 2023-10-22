@@ -33,9 +33,7 @@ CREATE TABLE users_roles (
                              PRIMARY KEY (user_id, role_id),
                              FOREIGN KEY (user_id) REFERENCES users (id),
                              FOREIGN KEY (role_id) REFERENCES roles (id)
-)
-
-
+);
 
 
 -- INSERT INTO roles (name)
@@ -51,3 +49,12 @@ CREATE TABLE users_roles (
 -- -- Связываем пользователя с ролью
 -- INSERT INTO users_roles (user_id, role_id)
 -- VALUES (1, 1);
+
+INSERT INTO roles (name)
+VALUES ('ROLE_MODERATOR'), ('ROLE_USER');
+
+INSERT INTO users (id, itin, firstname, password, phone, email, lastname)
+VALUES (1, '123456789012', 'Асхат', '$2a$10$/R5FEJnBkO3cYOSghzv/Q.hsFAH/4iaV/4ZaUcLvauw6Tg.xEQCDW', '+77711551534', 'finf0094@gmail.com', 'Kulush');
+
+INSERT INTO users_roles (user_id, role_id)
+VALUES (1, 1);
