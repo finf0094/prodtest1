@@ -24,6 +24,31 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/user-info/{id}")
+    public UserInfo getUserData(@PathVariable Long id) {
+        UserInfo userInfo = new UserInfo();
+
+        // находим в базе пользователя
+        User user = userService.findById(id).get();
+
+        List<String> roles = user.getRoles()
+                .stream()
+                .map(Role::getName)
+                .toList();
+
+        userInfo.setItin(user.getItin());
+        userInfo.setEmail(user.getEmail());
+        userInfo.setFirstName(user.getFirstname());
+        userInfo.setRoles(roles);
+        userInfo.setPhoneNumber(user.getPhone());
+        userInfo.setLastName(user.getLastname());
+        userInfo.setPosition(user.getPosition());
+
+        return userInfo;
+    }
+
+
     @GetMapping("/user-info")
     public ResponseEntity<?> getUserData() {
         // получаем из фильтра данные ползователя

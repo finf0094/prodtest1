@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,10 +64,11 @@ public class ApprovalRequestService {
                 )).collect(Collectors.toList());
     }
 
-    public ApprovalRequestStatus getStatusByItin(String itin)
+    public Optional<ApprovalRequest> getApprovalRequestByItin(String itin)
     {
-        ApprovalRequest  approvalRequest = approvalRequestRepository.findByUser_Itin(itin);
-        return approvalRequest.getStatus();
+        Optional<ApprovalRequest> approvalRequest = approvalRequestRepository.findByUser_Itin(itin);
+
+        return approvalRequest;
     }
 
 }

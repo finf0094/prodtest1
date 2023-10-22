@@ -101,6 +101,9 @@ public class UserService implements UserDetailsService {
     public Optional<User> findByItin(String itin) {
         return userRepository.findByItin(itin);
     }
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
 
     public User[] getUsersFromDjangoApi() {
         String apiUrl = "http://185.125.88.26:3000/api/users/";

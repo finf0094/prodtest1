@@ -70,8 +70,6 @@ public class SecurityConfig {
                                     "api/approval-requests",
 
                                     // резюме
-                                    "api/download-resume/{resumeId}",
-                                    "api/download-resume-iin/{iin}",
                                     "api/delete-resume/{resumeId}",
                                     "api/user-resume/{iin}",
                                     "api/upload-resume",

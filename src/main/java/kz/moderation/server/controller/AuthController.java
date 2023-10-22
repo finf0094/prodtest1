@@ -90,6 +90,12 @@ public class AuthController {
             );
         }
 
+        if (userService.findByEmail(registrationUserDto.getEmail()).isPresent()) {
+            return new ResponseEntity<>(
+                    new AppError(HttpStatus.BAD_REQUEST.value(), "Пользователь с таким ИИН уже существует"), HttpStatus.BAD_REQUEST
+            );
+        }
+
         System.out.println(userFromDjango);
 
         // Create a new user and set its properties using data from Django

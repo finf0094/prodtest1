@@ -6,6 +6,7 @@ import kz.moderation.server.dto.ApprovalRequest.response.ApprovalRequestResponse
 import kz.moderation.server.dto.ResponseDto;
 import kz.moderation.server.dto.user.UserDto;
 import kz.moderation.server.entity.ApprovalRequest;
+import kz.moderation.server.exception.AppError;
 import kz.moderation.server.exception.NotFoundException;
 import kz.moderation.server.service.ApprovalRequestService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/approval-requests")
@@ -66,7 +68,15 @@ public class ApprovalRequestController {
     @GetMapping("/status")
     public ResponseEntity<?> userStatus(@PathParam("itin") String itin)
     {
-        return ResponseEntity.ok(approvalRequestService.getStatusByItin(itin).toString());
+        Optional<ApprovalRequest> approvalRequest = approvalRequestService.getApprovalRequestByItin(itin);
+
+        if (!approvalRequest.isPresent()) {
+            return new ResponseEntity<>(
+                    new AppError(HttpStatus.NOT_FOUND.value(), "Approval request does not exist"), HttpStatus.NOT_FOUND
+            );
+        }
+
+        return ResponseEntity.ok(approvalRequest.get());
     }
 
     @GetMapping
