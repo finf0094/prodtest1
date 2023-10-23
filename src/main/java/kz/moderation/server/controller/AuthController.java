@@ -44,7 +44,7 @@ public class AuthController {
                     authRequest.getIin(), authRequest.getPassword()
             ));
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Неправильный логин или пароль"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Неправильный логин или пароль"), HttpStatus.BAD_REQUEST);
         }
 
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getIin());
