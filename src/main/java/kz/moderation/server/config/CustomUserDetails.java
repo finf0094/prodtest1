@@ -6,20 +6,26 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
-    private String iin;
+
     private String username;
     private String password;
+    private String email;
     private Collection<? extends GrantedAuthority> authorities;
+    private boolean accountNonExpired;
+    private boolean accountNonLocked;
+    private boolean credentialsNonExpired;
+    private boolean enabled;
 
-    public CustomUserDetails(String iin, String username, String password, Collection<? extends GrantedAuthority> authorities) {
-        this.iin = iin;
+
+    public CustomUserDetails(String username, String password, String email, Collection<? extends GrantedAuthority> authorities) {
         this.username = username;
         this.password = password;
+        this.email = email;
         this.authorities = authorities;
-    }
-
-    public String getIin() {
-        return iin;
+        this.accountNonExpired = true;
+        this.accountNonLocked = true;
+        this.credentialsNonExpired = true;
+        this.enabled = true;
     }
 
     @Override
@@ -32,6 +38,10 @@ public class CustomUserDetails implements UserDetails {
         return password;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     @Override
     public String getUsername() {
         return username;
@@ -39,25 +49,21 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        // Реализуйте проверку срока действия аккаунта (например, true, если аккаунт действителен)
-        return true;
+        return accountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        // Реализуйте проверку, заблокирован ли аккаунт (например, true, если аккаунт не заблокирован)
-        return true;
+        return accountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        // Реализуйте проверку срока действия учетных данных (например, true, если учетные данные действительны)
-        return true;
+        return credentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        // Реализуйте проверку, включен ли аккаунт (например, true, если аккаунт включен)
-        return true;
+        return enabled;
     }
 }

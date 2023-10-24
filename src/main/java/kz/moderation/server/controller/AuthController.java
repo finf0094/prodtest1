@@ -1,5 +1,6 @@
 package kz.moderation.server.controller;
 
+import kz.moderation.server.config.CustomUserDetails;
 import kz.moderation.server.dto.user.UserResponseAfterAuth;
 import kz.moderation.server.entity.RefreshToken;
 import kz.moderation.server.entity.User;
@@ -46,13 +47,11 @@ public class AuthController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authRequest.getIin(), authRequest.getPassword()
             ));
-        } catch (BadCredentialsException e) {
-            throw new AuthenticationException("Неправильный логин или пароль");
-        } catch (UsernameNotFoundException e) {
-            throw new AuthenticationException("Пользователь с таким ИИН не найден");
+        }  catch (BadCredentialsException e) {
+            throw new AuthenticationException("Пароль неправильный", HttpStatus.UNAUTHORIZED);
         }
 
-        UserDetails userDetails = userService.loadUserByUsername(authRequest.getIin());
+        CustomUserDetails userDetails = userService.loadUserByUsername(authRequest.getIin());
         String accessToken = jwtTokenUtils.generateToken(userDetails);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequest.getIin());
 
@@ -61,7 +60,7 @@ public class AuthController {
                 .map(authority -> authority.getAuthority())
                 .collect(Collectors.toList());
 
-        UserResponseAfterAuth userResponseAfterAuth = new UserResponseAfterAuth(authRequest.getIin(),userDetails.getUsername(), roles);
+        UserResponseAfterAuth userResponseAfterAuth = new UserResponseAfterAuth(authRequest.getIin(), userDetails.getEmail(), roles);
 
         JwtResponse jwtResponse = JwtResponse.builder()
                 .accessToken(accessToken)
@@ -85,20 +84,20 @@ public class AuthController {
 
         // Check if the user data is retrieved successfully from Django
         if (userFromDjango == null) {
-            return new ResponseEntity<>(
-                    new AppError(HttpStatus.NOT_FOUND.value(), "Django"), HttpStatus.NOT_FOUND
-            );
+            throw new AuthenticationException("Пользователь не найден", HttpStatus.NOT_FOUND);
         }
 
         if (userService.findByItin(registrationUserDto.getIin()).isPresent()) {
-            return new ResponseEntity<>(
-                    new AppError(HttpStatus.BAD_REQUEST.value(), "Пользователь с таким ИИН уже существует"), HttpStatus.BAD_REQUEST
+            throw new AuthenticationException(
+                    String.format("Пользователь с ИИН '%s' уже существует", registrationUserDto.getIin()),
+                    HttpStatus.BAD_REQUEST
             );
         }
 
         if (userService.findByEmail(registrationUserDto.getEmail()).isPresent()) {
-            return new ResponseEntity<>(
-                    new AppError(HttpStatus.BAD_REQUEST.value(), "Пользователь с таким ИИН уже существует"), HttpStatus.BAD_REQUEST
+            throw new AuthenticationException(
+                    String.format("Пользователь с почтой '%s' уже существует", registrationUserDto.getEmail()),
+                    HttpStatus.BAD_REQUEST
             );
         }
 

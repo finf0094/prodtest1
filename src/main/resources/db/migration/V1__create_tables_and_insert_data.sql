@@ -57,7 +57,6 @@ VALUES (1000,
 
 -- Связываем пользователя с ролью
 INSERT INTO users_roles (user_id, role_id)
-VALUES (1000, 1);
-VALUES (1000, 2);
+VALUES (1000, 1), (1000, 2);
 
 

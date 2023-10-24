@@ -4,6 +4,7 @@ import kz.moderation.server.exception.Auth.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -12,19 +13,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ProblemDetail> handleAuthenticationException(AuthenticationException ex) {
 
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(ex.getHttpStatus(), ex.getMessage());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(ex.getHttpStatus())
                 .body(problem);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ProblemDetail> handleOtherExceptions(Exception ex) {
-
-        ProblemDetail problem = ProblemDetail
-                .forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(problem);
-    }
 }

@@ -4,6 +4,7 @@ package kz.moderation.server.service;
 import kz.moderation.server.config.CustomUserDetails;
 import kz.moderation.server.dto.RegistrationUserDto;
 import kz.moderation.server.entity.User;
+import kz.moderation.server.exception.Auth.AuthenticationException;
 import kz.moderation.server.repository.RoleRepository;
 import kz.moderation.server.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -58,15 +59,17 @@ public class UserService implements UserDetailsService {
 
     @Override
     @Transactional
-    public CustomUserDetails loadUserByUsername(String itin) throws UsernameNotFoundException {
-        User user = findByItin(itin).orElseThrow(() -> new UsernameNotFoundException(
-                String.format("Пользователь с ИИН '%s' не найден!", itin)
-        ));
+    public CustomUserDetails loadUserByUsername(String itin)  {
+        // Найти пользователя по ИИН в вашей базе данных
+        User user = userRepository.findByItin(itin)
+                .orElseThrow(() -> new AuthenticationException(String.format("Пользователь с ИИН '%s' не найден", itin), HttpStatus.UNAUTHORIZED)
+                );
 
+        // Создать экземпляр CustomUserDetails на основе данных пользователя
         CustomUserDetails customUserDetails = new CustomUserDetails(
                 user.getItin(),
-                user.getEmail(),
                 user.getPassword(),
+                user.getEmail(),
                 user.getRoles().stream()
                         .map(role -> new SimpleGrantedAuthority(role.getName()))
                         .collect(Collectors.toList())
@@ -74,6 +77,8 @@ public class UserService implements UserDetailsService {
 
         return customUserDetails;
     }
+
+
 
 
     public User save(User user) {
@@ -101,6 +106,7 @@ public class UserService implements UserDetailsService {
     public Optional<User> findByItin(String itin) {
         return userRepository.findByItin(itin);
     }
+
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }

@@ -35,7 +35,4 @@ public class User {
     private String phone;
 
     private String position;
-
-    @Column(name = "test_status")
-    private boolean testStatus = false;
 }

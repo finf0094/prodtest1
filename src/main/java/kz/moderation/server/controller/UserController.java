@@ -62,7 +62,7 @@ public class UserController {
         UserInfo userInfo = new UserInfo();
 
         // находим в базе пользователя
-        User user = userService.findByEmail(authentication.getName()).get();
+        User user = userService.findByItin(authentication.getName()).get();
 
         List<String> roles = user.getRoles()
                 .stream()

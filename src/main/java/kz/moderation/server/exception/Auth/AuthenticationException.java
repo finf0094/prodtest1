@@ -1,9 +1,16 @@
 package kz.moderation.server.exception.Auth;
 
-
+import org.springframework.http.HttpStatus;
 
 public class AuthenticationException extends RuntimeException {
-    public AuthenticationException(String message) {
+    private final HttpStatus httpStatus;
+
+    public AuthenticationException(String message, HttpStatus httpStatus) {
         super(message);
+        this.httpStatus = httpStatus;
+    }
+
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
     }
 }
