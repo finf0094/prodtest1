@@ -23,6 +23,7 @@ CREATE TABLE users (
                        firstname VARCHAR(255),
                        lastname VARCHAR(255),
                        password VARCHAR(255) NOT NULL,
+                       position VARCHAR(255),
                        phone VARCHAR(255) UNIQUE
 );
 
@@ -36,25 +37,27 @@ CREATE TABLE users_roles (
 );
 
 
--- INSERT INTO roles (name)
--- VALUES ('ROLE_MODERATOR'), ('ROLE_USER')
-
-
--- Вставляем начальные данные в таблицу users
--- PASSWORD: 12345
-
--- INSERT INTO users (id, itin, firstname, password, phone, email, lastname)
--- VALUES (1, '0007275504', 'Асхат', '$2a$10$/R5FEJnBkO3cYOSghzv/Q.hsFAH/4iaV/4ZaUcLvauw6Tg.xEQCDW', '+77711551534', 'finf0094@gmail.com', 'Kulush');
---
--- -- Связываем пользователя с ролью
--- INSERT INTO users_roles (user_id, role_id)
--- VALUES (1, 1);
-
 INSERT INTO roles (name)
 VALUES ('ROLE_MODERATOR'), ('ROLE_USER');
 
-INSERT INTO users (id, itin, firstname, password, phone, email, lastname)
-VALUES (1, '123456789012', 'Асхат', '$2a$10$/R5FEJnBkO3cYOSghzv/Q.hsFAH/4iaV/4ZaUcLvauw6Tg.xEQCDW', '+77711551534', 'finf0094@gmail.com', 'Kulush');
 
+-- Вставляем начальные данные в таблицу users
+-- PASSWORD: tete9291
+
+INSERT INTO users (id, itin, firstname, password, phone, email, lastname, position)
+VALUES (1000,
+        '871214501234',
+        'Айдын',
+        '$2a$10$K7YNSx1toWbxSSg6P3MigeYs.4ZikPjwcDPgMvbk7j1sCoh2dYSGy',
+        '+77011234567',
+        'aidin@example.com',
+        'Қожаш Сырымұлы',
+        'Начальник отдела'
+        );
+
+-- Связываем пользователя с ролью
 INSERT INTO users_roles (user_id, role_id)
-VALUES (1, 1);
+VALUES (1000, 1);
+VALUES (1000, 2);
+
+

@@ -4,6 +4,7 @@ import kz.moderation.server.dto.user.UserResponseAfterAuth;
 import kz.moderation.server.entity.RefreshToken;
 import kz.moderation.server.entity.User;
 import kz.moderation.server.exception.AppError;
+import kz.moderation.server.exception.Auth.AuthenticationException;
 import kz.moderation.server.service.RefreshTokenService;
 import kz.moderation.server.service.RoleService;
 import kz.moderation.server.service.UserService;
@@ -19,10 +20,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,7 +47,9 @@ public class AuthController {
                     authRequest.getIin(), authRequest.getPassword()
             ));
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Неправильный логин или пароль"), HttpStatus.BAD_REQUEST);
+            throw new AuthenticationException("Неправильный логин или пароль");
+        } catch (UsernameNotFoundException e) {
+            throw new AuthenticationException("Пользователь с таким ИИН не найден");
         }
 
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getIin());
@@ -69,12 +74,19 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
+
+        if (userService.findByItin(registrationUserDto.getIin()).isPresent()) {
+            return new ResponseEntity<>(
+                    new AppError(HttpStatus.BAD_REQUEST.value(), "Пользователь с таким ИИН уже существует в базе !"), HttpStatus.BAD_REQUEST
+            );
+        }
+
         User userFromDjango = userService.getUserFromDjangoApiByItin(registrationUserDto.getIin());
 
         // Check if the user data is retrieved successfully from Django
         if (userFromDjango == null) {
             return new ResponseEntity<>(
-                    new AppError(HttpStatus.BAD_REQUEST.value(), "Django"), HttpStatus.BAD_REQUEST
+                    new AppError(HttpStatus.NOT_FOUND.value(), "Django"), HttpStatus.NOT_FOUND
             );
         }
 
